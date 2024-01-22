@@ -2,3 +2,17 @@ server:
   port: 8080
   servlet:
     context-path: /LittleBearAdmin
+    
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/little_bear
+    
+jpa:
+  hibernate:
+    ddl-auto: update
+  properties:
+    hibernate:
+      format_sql: true
+      dialect: org.hibernate.dialect.MySQL8Dialect.class
+  show-sql: true
+    
