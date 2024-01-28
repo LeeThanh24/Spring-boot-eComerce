@@ -8,6 +8,15 @@
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
 	<script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
 	<script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+	<style>
+		.bottom-footer {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			text-align: center;
+			padding: 5px;
+		}
+	</style>
 </head>
 
 <body>
@@ -21,7 +30,7 @@
 
 				</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavBar">
-						<span class="navbar-toggler-icon"></span>
+					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse" id="topNavBar">
 					<ul class="navbar-nav">
@@ -68,7 +77,8 @@
 			<h1>Welcome to admin control panel</h1>
 		</div>
 
-		<p>LittleBear control panel - Copyright &copy;LittleBear </p>
+		<p class="text-center bottom-footer">LittleBear control panel - Copyright &copy;LittleBear </p>
+
 	</div>
 
 
