@@ -1,16 +1,21 @@
 package com.leethanh.admin.user;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.leethanh.admin.FileUploadUtil;
 import com.leethanh.common.entity.Roles;
 import com.leethanh.common.entity.Users;
 
@@ -45,11 +50,34 @@ public class UsersController {
 	}
 	
 	@PostMapping("/users/save")
-	public String saveUser( Users user)
+	public String saveUser( Users user, @RequestParam ("image") MultipartFile multipartFile) throws IOException
 	{
 		
-		System.out.println(user);
-		usersService.save(user);
+		System.out.println("multipartfile is empty?"+multipartFile.isEmpty());
+		if (!multipartFile.isEmpty())
+		{
+			String fileName= StringUtils.cleanPath(multipartFile.getOriginalFilename());
+			System.out.println("photo name"+fileName);
+			user.setPhotos(fileName);
+			
+			Users savedUser = usersService.save(user);
+			String uploadDir= "user-photos/"+savedUser.getId();
+			FileUploadUtil.cleanDir(uploadDir);
+			FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+			
+		}else 
+		{
+			System.out.println("user photo is empty ? :"+user.getPhotos().isEmpty());
+			if (user.getPhotos().isEmpty())
+			{
+				user.setPhotos(null);
+			}
+			
+			Users savedUser = usersService.save(user);
+			
+		}
+		
+	
 		return "redirect:/users";
 	}
 	
