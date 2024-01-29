@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "users")
@@ -140,6 +141,22 @@ public class Users {
 	public String toString() {
 		return "Users [id=" + id + ", email=" + email + ", password=" + password + ", firstName=" + firstName
 				+ ", lastName=" + lastName + ", photos=" + photos + ", enabled=" + enabled + ", roles=" + roles + "]";
+	}
+	
+	@Transient
+	public String getPhotoImagePath() {
+		
+		String path="";
+		if (id ==null || photos==null||id<=0 )
+		{
+			path="/images/default_user.png";
+			 
+		}else 
+		{
+			path="/user-photos/"+this.id+"/"+this.photos;
+		}
+		System.out.println("Enter photo image path in Users "+path);
+		return path;
 	}
 	
 	

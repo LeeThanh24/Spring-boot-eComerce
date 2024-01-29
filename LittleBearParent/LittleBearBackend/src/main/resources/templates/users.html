@@ -18,6 +18,13 @@
 			text-align: center;
 			padding: 5px;
 		}
+		
+		.rectangle {
+            width: 80px;
+            height: 100px;
+            
+            border-radius: 10px; /* Đặt bán kính bo tròn */
+        }
 	</style>
 </head>
 
@@ -98,7 +105,11 @@
 				<tbody>
 					<tr th:each="user : ${listUsers}">
 						<td>[[${user.id}]]</td>
-						<td><span class="fas fa-portrait fa-3x icon-silver"></span></td>
+						<td>
+							<img  class="rectangle" th:src="@{${user.getPhotoImagePath}}"></img>
+							
+
+						</td>
 						<td>[[${user.email}]]</td>
 						<td>[[${user.firstName}]]</td>
 						<td>[[${user.lastName}]]</td>
@@ -108,13 +119,11 @@
 							<a th:if="${user.enabled== true}" id="trueStatus"
 								class="fas fa-check-circle fa-2x icon-green"
 								th:onclick="'updateDisableStatus(event,\'' + @{'/users/' + ${user.id} + '/status/false'} + '\')'"
-								href=""
-								title="Disable this user"></a>
+								href="" title="Disable this user"></a>
 							<a th:if="${user.enabled== false}" id="falseStatus"
 								class="fas fa-check-circle fa-2x icon-dark"
 								th:onclick="'updateEnabledStatus(event,\'' + @{'/users/' + ${user.id} + '/status/true'} + '\')'"
-								href=""
-								title="Enable this user"></a>
+								href="" title="Enable this user"></a>
 
 
 
@@ -221,7 +230,7 @@
 
 
 		});
-		function updateEnabledStatus(event,url) {
+		function updateEnabledStatus(event, url) {
 
 			$.ajax({
 				type: "POST",
@@ -237,9 +246,9 @@
 			});
 		}
 
-		function updateDisableStatus(event,url) {
+		function updateDisableStatus(event, url) {
 
-			
+
 			$.ajax({
 				type: "POST",
 				url: url,
