@@ -18,13 +18,14 @@
 			text-align: center;
 			padding: 5px;
 		}
-		
+
 		.rectangle {
-            width: 80px;
-            height: 100px;
-            
-            border-radius: 10px; /* Đặt bán kính bo tròn */
-        }
+			width: 90px;
+			height: 100px;
+
+			border-radius: 10px;
+			/* Đặt bán kính bo tròn */
+		}
 	</style>
 </head>
 
@@ -87,18 +88,75 @@
 			<a th:href="@{/users/new}">Create New User</a>
 		</div>
 
-
 		<div>
 			<table class="table table-bordered table-striped table-hover table-responsive-xl">
 				<thead class="table-dark">
 					<tr>
-						<th>User ID</th>
+						<th>
+							<a th:if="${sortField != 'id'}" class="text-white" style="text-decoration:none"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField=id&sortDir='+${sortDir}}">User
+								ID</a>
+							<a th:if="${sortField =='id'}" class="text-white" style="text-decoration:none"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField=id&sortDir='+${reverseSortDir}}">User
+								ID</a>
+							<a id="enabledRemainingInPage"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField='+${sortField}+'&sortDir='+${sortDir}}"></a>
+							<span th:if="${sortField =='id'}"
+								th:class="${sortDir =='asc' ?'fas fa-sort-up':'fas fa-sort-down'}">
+
+							</span>
+						</th>
 						<th>Photo</th>
-						<th>Email</th>
-						<th>First name</th>
-						<th>Last name</th>
+						<th>
+							<a th:if="${sortField != 'email'}" class="text-white" style="text-decoration:none"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField=email&sortDir='+${sortDir}}">Email</a>
+							<a th:if="${sortField =='email'}" class="text-white" style="text-decoration:none"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField=email&sortDir='+${reverseSortDir}}">Email</a>
+
+							<span th:if="${sortField =='email'}"
+								th:class="${sortDir =='asc' ?'fas fa-sort-up':'fas fa-sort-down'}">
+
+							</span>
+						</th>
+						<th>
+							<a th:if="${sortField != 'firstName'}" class="text-white" style="text-decoration:none"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField=firstName&sortDir='+${sortDir}}">First
+								name</a>
+							<a th:if="${sortField =='firstName'}" class="text-white" style="text-decoration:none"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField=firstName&sortDir='+${reverseSortDir}}">First
+								name</a>
+
+							<span th:if="${sortField =='firstName'}"
+								th:class="${sortDir =='asc' ?'fas fa-sort-up':'fas fa-sort-down'}">
+
+							</span>
+						</th>
+						<th>
+							<a th:if="${sortField != 'lastName'}" class="text-white" style="text-decoration:none"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField=lastName&sortDir='+${sortDir}}">Last
+								name</a>
+							<a th:if="${sortField =='lastName'}" class="text-white" style="text-decoration:none"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField=lastName&sortDir='+${reverseSortDir}}">Last
+								name</a>
+
+							<span th:if="${sortField =='lastName'}"
+								th:class="${sortDir =='asc' ?'fas fa-sort-up':'fas fa-sort-down'}">
+
+							</span>
+						</th>
 						<th>Roles</th>
-						<th>Enabled</th>
+						<th>
+							<a th:if="${sortField != 'enabled'}" class="text-white" style="text-decoration:none"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField=enabled&sortDir='+${sortDir}}">Enabled</a>
+							<a th:if="${sortField =='enabled'}" class="text-white" style="text-decoration:none"
+								th:href="@{'/users/page/'+${currentPage}+'?sortField=enabled&sortDir='+${reverseSortDir}}">Enabled</a>
+
+							<span th:if="${sortField =='enabled'}"
+								th:class="${sortDir =='asc' ?'fas fa-sort-up':'fas fa-sort-down'}">
+
+							</span>
+						</th>
+
 						<th></th>
 					</tr>
 				</thead>
@@ -106,8 +164,8 @@
 					<tr th:each="user : ${listUsers}">
 						<td>[[${user.id}]]</td>
 						<td>
-							<img  class="rectangle" th:src="@{${user.getPhotoImagePath}}"></img>
-							
+							<img class="rectangle" th:src="@{${user.getPhotoImagePath}}"></img>
+
 
 						</td>
 						<td>[[${user.email}]]</td>
@@ -196,6 +254,47 @@
 			modal</button>
 
 
+
+		<div class="text-center m-1">
+			<span th:if="${totalItem} >0"> Showing users #[[${startCount}]] to [[${endCount}]] of [[${totalItem}]]
+			</span>
+			<span th:if="${totalItem} <=0"> No users in the list
+			</span>
+		</div>
+
+		<div>
+			<nav>
+				<ul class="pagination justify-content-center">
+					<li th:class="${currentPage >1 ?'page-item':'page-item disabled'}">
+						<a class="page-link"
+							th:href="@{'/users/page/1?sortField='+${sortField}+'&sortDir='+${sortDir}}">First</a>
+					</li>
+					<li th:class="${currentPage >1 ?'page-item':'page-item disabled'}">
+
+						<a class="page-link"
+							th:href="@{'/users/page/'+${currentPage-1}+'?sortField='+${sortField}+'&sortDir='+${sortDir}}">Previous</a>
+					</li>
+
+					<li th:class="${currentPage != i ?'page-item' :'page-item active'}"
+						th:each="i:${#numbers.sequence(1,lastPage)}">
+						<a class="page-link"
+							th:href="@{'/users/page/'+${i}+'?sortField='+${sortField}+'&sortDir='+${sortDir}}">[[${i}]]</a>
+					</li>
+
+
+					<li th:class="${currentPage <lastPage ?'page-item':'page-item disabled'}">
+						<a class="page-link"
+							th:href="@{'/users/page/'+${currentPage+1}+'?sortField='+${sortField}+'&sortDir='+${sortDir}}">Next</a>
+					</li>
+					<li th:class="${currentPage <lastPage ?'page-item':'page-item disabled'}">
+						<a class="page-link"
+							th:href="@{'/users/page/'+${lastPage}+'?sortField='+${sortField}+'&sortDir='+${sortDir}}">Last</a>
+					</li>
+
+
+				</ul>
+			</nav>
+		</div>
 		<p class="text-center ">LittleBear control panel - Copyright &copy;LittleBear </p>
 	</div>
 
@@ -232,6 +331,14 @@
 		});
 		function updateEnabledStatus(event, url) {
 
+			var link = document.getElementById('enabledRemainingInPage');
+			if (link) {
+				var hrefValue = link.getAttribute('href');
+				console.log('Giá trị href:', hrefValue);
+			} else {
+				console.error('Không tìm thấy phần tử với id là "enabledRemainingInPage".');
+			}
+			
 			$.ajax({
 				type: "POST",
 				url: url,
@@ -239,7 +346,7 @@
 					event.preventDefault();
 					// Check the result and show the modal accordingly
 					console.log("hello enable", url)
-					window.location.href = "[[@{/users}]]";
+					window.location.href = hrefValue;
 				},
 				error: function () {
 				}
@@ -247,8 +354,14 @@
 		}
 
 		function updateDisableStatus(event, url) {
-
-
+			var link = document.getElementById('enabledRemainingInPage');
+			if (link) {
+				var hrefValue = link.getAttribute('href');
+				console.log('Giá trị href:', hrefValue);
+			} else {
+				console.error('Không tìm thấy phần tử với id là "enabledRemainingInPage".');
+			}
+			
 			$.ajax({
 				type: "POST",
 				url: url,
@@ -256,7 +369,7 @@
 					event.preventDefault();
 					// Check the result and show the modal accordingly
 					console.log("hello disable", url)
-					window.location.href = "[[@{/users}]]";
+					window.location.href = hrefValue;
 				},
 				error: function () {
 				}
