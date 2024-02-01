@@ -21,6 +21,8 @@ import com.leethanh.admin.FileUploadUtil;
 import com.leethanh.common.entity.Roles;
 import com.leethanh.common.entity.Users;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Controller
 public class UsersController {
 
@@ -29,7 +31,7 @@ public class UsersController {
 
 	@GetMapping("/users")
 	public void listAll(Model model) {
-		listUsersByPage(1, model, "id", "asc");
+		listUsersByPage(1, model, "id", "asc",null);
 	}
 
 	@GetMapping("/users/new")
@@ -45,7 +47,8 @@ public class UsersController {
 	}
 
 	@PostMapping("/users/save")
-	public String saveUser(Users user, @RequestParam("image") MultipartFile multipartFile) throws IOException {
+	public String saveUser(Users user, @RequestParam("image") MultipartFile multipartFile
+			) throws IOException {
 
 		System.out.println("multipartfile is empty?" + multipartFile.isEmpty());
 		if (!multipartFile.isEmpty()) {
@@ -67,10 +70,10 @@ public class UsersController {
 			Users savedUser = usersService.save(user);
 
 		}
-
-		return "redirect:/users";
+		String firstPartOfEmail=user.getEmail().split("@")[0];
+		return "redirect:/users/page/1?sortField=id&sortDir=asc&keyword="+firstPartOfEmail;
 	}
-
+	
 	@GetMapping("/users/edit/{id}")
 	public String editUser(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
 		try {
@@ -93,38 +96,64 @@ public class UsersController {
 
 	@GetMapping("/users/page/{pageNum}")
 	public String listUsersByPage(@PathVariable("pageNum") int pageNum, Model model,
-			@Param("sortField") String sortField, @Param("sortDir") String sortDir) {
+			@Param("sortField") String sortField, @Param("sortDir") String sortDir
+			, @Param("keyword") String keyword) {
 		if (pageNum <= 0) {
 			pageNum = 1;
 		}
-		int lastPage = Math.round((float) (usersService.listAll().size() / (float) usersService.USER_PER_PAGE));
-		if (pageNum > lastPage) {
-			pageNum = lastPage;
-		}
-		Page<Users> page = usersService.listUsersByPage(pageNum, sortField, sortDir);
+		
+		Page<Users> page = usersService.listUsersByPage(pageNum, sortField, sortDir,keyword);
 		List<Users> listUsers = page.getContent();
-
+		
 		int startCount = (pageNum - 1) * usersService.USER_PER_PAGE + 1;
 		int endCount = startCount + usersService.USER_PER_PAGE - 1;
-		int totalItem = usersService.listAll().size();
+		int totalItem =(int) page.getTotalElements();
 
 		String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";
 
 		if (endCount > totalItem) {
 			endCount = totalItem;
 		}
-		System.out.println("reverse sort dir is :"+reverseSortDir);
+		int lastPage =  page.getTotalPages();
+		if (pageNum > lastPage) {
+			pageNum = lastPage;
+		}
+		model.addAttribute("totalPage", lastPage);
 		model.addAttribute("listUsers", listUsers);
 		model.addAttribute("startCount", startCount);
 		model.addAttribute("endCount", endCount);
 		model.addAttribute("totalItem", totalItem);
 		model.addAttribute("currentPage", pageNum);
-		model.addAttribute("lastPage", lastPage);
+
 		model.addAttribute("sortField", sortField);
 		model.addAttribute("sortDir", sortDir);
 		model.addAttribute("reverseSortDir", reverseSortDir);
-
+		model.addAttribute("keyword", keyword);
 		return "users";
 
+	}
+	
+	@GetMapping("/users/export/csv")
+	public void exportToCSV(HttpServletResponse httpServletResponse) throws IOException
+	{
+		List<Users> listUsers=usersService.listAll();
+		UsersCsvExporter exporter=  new UsersCsvExporter();
+		exporter.export(listUsers, httpServletResponse);
+	}
+	
+	@GetMapping("/users/export/excel")
+	public void exportToExcel(HttpServletResponse httpServletResponse) throws IOException
+	{
+		List<Users> listUsers=usersService.listAll();
+		UserExcelExporter exporter=  new UserExcelExporter();
+		exporter.export(listUsers, httpServletResponse);
+	}
+	
+	@GetMapping("/users/export/pdf")
+	public void exportToPDF(HttpServletResponse httpServletResponse) throws IOException
+	{
+		List<Users> listUsers=usersService.listAll();
+		UserPdfExporter exporter=  new UserPdfExporter();
+		exporter.export(listUsers, httpServletResponse);
 	}
 }

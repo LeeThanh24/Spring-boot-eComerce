@@ -1,5 +1,7 @@
 package com.leethanh.admin.user;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -17,6 +19,8 @@ public interface UsersRepository extends PagingAndSortingRepository<Users, Integ
 	
 	public Integer countById(Integer Id);
 	
+	@Query("select u from Users u where concat(u.firstName,' ' ,u.lastName,' ' ,u.email,' ' ,u.id,' ' )  LIKE %?1% ")
+	public Page<Users> findAll(String keyword,Pageable pageable);
 	
 	@Query("UPDATE Users u SET u.enabled = ?2 WHERE u.id = ?1")
 	@Modifying

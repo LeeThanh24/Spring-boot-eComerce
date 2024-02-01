@@ -33,7 +33,7 @@ public class UsersService {
 	PasswordEncoder passwordEncoder;
 
 	public List<Users> listAll() {
-		return (List<Users>) usersRepository.findAll();
+		return (List<Users>) usersRepository.findAll(Sort.by("id").ascending());
 	}
 
 	public List<Roles> listRoles() {
@@ -120,12 +120,17 @@ public class UsersService {
 		usersRepository.updateEnabledStatus(id, status);
 	}
 	
-	public Page<Users> listUsersByPage (int pageNum,String sortField,String sortDir)
+	public Page<Users> listUsersByPage (int pageNum,String sortField,String sortDir,String keyword)
 	{
 		Sort sort=Sort.by(sortField);
 		sort = sortDir.equals("asc") ?sort.ascending():sort.descending();
 		
 		Pageable pageable= PageRequest.of(pageNum-1,USER_PER_PAGE,sort );
+		if (keyword !=null)
+		{
+			
+			return usersRepository.findAll(keyword,pageable);
+		}
 		return usersRepository.findAll(pageable);
 	}
 }
