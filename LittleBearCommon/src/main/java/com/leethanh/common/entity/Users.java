@@ -115,7 +115,7 @@ public class Users {
 		this.photos = photos;
 	}
 
-	public boolean isEnabled() {
+	public boolean getEnabled() {
 		return enabled;
 	}
 
