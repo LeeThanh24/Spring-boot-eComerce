@@ -159,6 +159,11 @@ public class Users {
 		return path;
 	}
 	
-	
+	@Transient
+	public String getFullname() {
+		
+		
+		return firstName+" "+lastName;
+	}
 	
 }
