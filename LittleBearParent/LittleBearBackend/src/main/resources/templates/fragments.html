@@ -7,7 +7,7 @@
 </head>
 
 <body>
-	<th th:fragment="column_link(fieldName,columnLabel)">
+	<th th:fragment="column_link(fieldName,columnLabel,removeTag)" th:remove="${removeTag}">
 		<a class="text-white" style="text-decoration:none"
 			th:href="@{'/users/page/'+${currentPage}+'?sortField='+${fieldName}+'&sortDir='+${sortField != fieldName ? sortDir :reverseSortDir} +${keyword !=null ? '&keyword='+keyword :''}}">[[${columnLabel}]]
 		</a>
@@ -27,11 +27,29 @@
 			th:href="@{'/users/page/'+${currentPage}+'?sortField='+${sortField}+'&sortDir='+${sortDir}+${keyword !=null ? '&keyword='+keyword :''}}">[[${columnLabel}]]</a>
 	</li>
 
-	<li th:fragment="pagination_link_loop" th:class="${currentPage != i ?'page-item' :'page-item active'}" th:each="i:${#numbers.sequence(1,totalPage)}">
+	<li th:fragment="pagination_link_loop" th:class="${currentPage != i ?'page-item' :'page-item active'}"
+		th:each="i:${#numbers.sequence(1,totalPage)}">
 		<a class="page-link"
 			th:href="@{'/users/page/'+${i}+'?sortField='+${sortField}+'&sortDir='+${sortDir}+${keyword !=null ? '&keyword='+keyword :''}}">[[${i}]]</a>
-		
+
 	</li>
+
+	<th th:fragment="createNewAndExport(name)">
+		<a th:if="${name != 'new'}" th:href="@{'/users/export/' + ${name}}"
+			th:class="'fas fa-file-' + ${name} + ' fa-2x icon-dark mr-2'">
+		</a>
+		<a th:if="${name == 'new'}" th:href="@{'/users/new'}" class="fas fa-user-plus fa-2x icon-dark mr-2">
+		</a>
+		&nbsp; &nbsp;
+
+	</th>
+
+	<li th:fragment="createHeader(labelName , linkName)" class="nav-item">
+		<a class="nav-link" th:href="@{'/'+${linkName}}">[[${labelName}]]</a>
+	</li>
+
+
+
 </body>
 
 </html>
