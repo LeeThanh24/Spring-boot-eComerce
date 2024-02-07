@@ -1,4 +1,4 @@
-package com.leethanh.admin.user;
+package com.leethanh.admin.user.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -18,6 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.leethanh.admin.FileUploadUtil;
+import com.leethanh.admin.security.LittleBearUserDetails;
+import com.leethanh.admin.user.UserNotFoundException;
+import com.leethanh.admin.user.UsersService;
+import com.leethanh.admin.user.export.UserExcelExporter;
+import com.leethanh.admin.user.export.UserPdfExporter;
+import com.leethanh.admin.user.export.UsersCsvExporter;
 import com.leethanh.common.entity.Roles;
 import com.leethanh.common.entity.Users;
 
@@ -43,7 +50,7 @@ public class UsersController {
 		model.addAttribute("user", user);
 		model.addAttribute("listRoles", listRoles);
 		model.addAttribute("pageTitle", "Create New User");
-		return "user_form";
+		return "form/user_form";
 	}
 
 	@PostMapping("/users/save")
@@ -71,7 +78,7 @@ public class UsersController {
 
 		}
 		String firstPartOfEmail=user.getEmail().split("@")[0];
-		return "redirect:/users/page/1?sortField=id&sortDir=asc&keyword="+firstPartOfEmail;
+		return "redirect:/users/page/1?sortField=id&sortDir=asc&keyword="+user.getFullname();
 	}
 	
 	@GetMapping("/users/edit/{id}")
@@ -85,7 +92,7 @@ public class UsersController {
 
 			model.addAttribute("listRoles", listRoles);
 			model.addAttribute("pageTitle", "Edit User (ID - " + id + ")");
-			return "user_form";
+			return "form/user_form";
 		} catch (UserNotFoundException e) {
 			// TODO: handle exception
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -129,9 +136,11 @@ public class UsersController {
 		model.addAttribute("sortDir", sortDir);
 		model.addAttribute("reverseSortDir", reverseSortDir);
 		model.addAttribute("keyword", keyword);
+		System.out.println("entered listUsersByPage");
 		return "users";
-
+		
 	}
+	
 	
 	@GetMapping("/users/export/csv")
 	public void exportToCSV(HttpServletResponse httpServletResponse) throws IOException
@@ -155,5 +164,46 @@ public class UsersController {
 		List<Users> listUsers=usersService.listAll();
 		UserPdfExporter exporter=  new UserPdfExporter();
 		exporter.export(listUsers, httpServletResponse);
+	}
+	
+	@GetMapping("/account")
+	public String viewAccountDetails(@AuthenticationPrincipal LittleBearUserDetails loggedUser, Model model) 
+	{
+		String email=loggedUser.getUsername();
+		Users user = usersService.getUserByEmail(email);
+		model.addAttribute("user",user);
+		
+		return "form/account_form";
+	}
+	
+	@PostMapping("/account/update")
+	public String saveAccountDetails(Users user,@AuthenticationPrincipal LittleBearUserDetails loggedUser, RedirectAttributes redirectAttributes, @RequestParam("image") MultipartFile multipartFile
+			) throws IOException {
+
+		System.out.println("multipartfile is empty?" + multipartFile.isEmpty());
+		if (!multipartFile.isEmpty()) {
+			String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+			System.out.println("photo name" + fileName);
+			user.setPhotos(fileName);
+			
+			Users savedUser = usersService.updateAccount(user);
+			String uploadDir = "user-photos/" + savedUser.getId();
+			FileUploadUtil.cleanDir(uploadDir);
+			FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+
+		} else {
+			System.out.println("user photo is empty ? :" + user.getPhotos().isEmpty());
+			if (user.getPhotos().isEmpty()) {
+				user.setPhotos(null);
+			}
+
+			Users savedUser = usersService.updateAccount(user);
+
+		}
+		
+		loggedUser.setFirstName(user.getFirstName());
+		loggedUser.setLastName(user.getLastName());
+		redirectAttributes.addFlashAttribute("message","Your account details have been updated");
+		return "redirect:/account";
 	}
 }

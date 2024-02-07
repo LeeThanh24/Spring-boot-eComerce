@@ -1,66 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-	<meta http-equiv="Content-type" content="text/html" charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-	<title>Little Bear Admin control panel</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/fontawesome/all.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
-	<script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
-	<script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-	<style>
-		.bottom-footer {
-			position: absolute;
-			bottom: 0;
-			width: 100%;
-			text-align: center;
-			padding: 5px;
-		}
-
-		.rectangle {
-			width: 90px;
-			height: 100px;
-
-			border-radius: 10px;
-			/* Đặt bán kính bo tròn */
-		}
-	</style>
-</head>
+<head th:replace="fragments:: page_head('Users - Little Bear Admin Control Panel')"></head>
 
 <body>
 
 	<div class="container-fluid">
 
-		<div>
-			<nav class="navbar navbar-expand-lg bg-dark navbar-dark">
-				<a class="navbar-brand" th:href="@{/}">
-					<img th:src="@{/images/logo.png}" width="80" height="50">
-
-				</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavBar">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="topNavBar">
-					<ul class="navbar-nav">
-						<li th:replace="fragments :: createHeader('Users',users)"></li>
-						<li th:replace="fragments :: createHeader('Categories',categories)"></li>
-						<li th:replace="fragments :: createHeader('Brands',brands)"></li>
-						<li th:replace="fragments :: createHeader('Products',products)"></li>
-						<li th:replace="fragments :: createHeader('Customers',customers)"></li>
-						<li th:replace="fragments :: createHeader('Shipping',shipping)"></li>
-						<li th:replace="fragments :: createHeader('Orders',orders)"></li>
-						<li th:replace="fragments :: createHeader('Sale reports',report)"></li>
-						<li th:replace="fragments :: createHeader('Articles',articles)"></li>
-						<li th:replace="fragments :: createHeader('Menus',menus)"></li>
-						<li th:replace="fragments :: createHeader('Settings',settings)"></li>
-					
-					</ul>
-				</div>
-
-			</nav>
-		</div>
+		<div th:replace="fragments:: menu"></div>
 
 		<div>
 			<h2>Manage Users</h2>
@@ -250,8 +197,9 @@
 			</ul>
 		</nav>
 	</div>
-	<p class="text-center ">LittleBear control panel - Copyright &copy;LittleBear </p>
-	</div>
+
+	<p th:replace="fragments:: footer('text-center')"></p>
+
 
 	<script>
 		$(document).ready(function () {

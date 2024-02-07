@@ -1,4 +1,4 @@
-package com.leethanh.admin.user;
+package com.leethanh.admin.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.leethanh.admin.user.UserNotFoundException;
+import com.leethanh.admin.user.UsersService;
 
 @RestController
 @CrossOrigin
