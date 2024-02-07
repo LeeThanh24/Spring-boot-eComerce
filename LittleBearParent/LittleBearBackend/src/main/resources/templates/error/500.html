@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head th:replace="fragments:: page_head('Error - Little Bear Admin Control Panel')"></head>
+
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+
+<body>
+	<div class="container-fluid">
+
+		<div th:replace="fragments:: menu"></div>
+
+		<div
+			th:replace="fragments:: error_message('Sorry, the server has encountered an error while processing your request')">
+		</div>
+
+		<p th:replace="fragments:: footer('text-center bottom-footer')"></p>
+
+
+	</div>
+</body>
+
+</html>
